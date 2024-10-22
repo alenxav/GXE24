@@ -72,3 +72,5 @@ cat(megasem_time,'/',round(mean(megasem_acc),3),'\n')
 megalmm_time = system.time(fx <- try(Solve_MegaLMM(Y,X),silent = T))[3]
 megalmm_acc = colMeans(sapply(1:ncol(TBV), function(i) by(data.frame(fx$gebv[,i],TBV[,i]),pop,function(x) cor(x)[1,2] ))) 
 cat(megalmm_time,'/',round(mean(megasem_lmm),3),'\n')
+
+# to lower runtime of bWGR functions, replace MRR3 by MRR3F
