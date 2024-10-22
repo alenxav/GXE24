@@ -38,7 +38,7 @@ validation = function(hat,avg=TRUE){
 ######## Train and validate models ##########
 
 # UVW (Univariate computed within-environment)
-beta_uvw = FUVBETA(Y_ES[es,],Q[es,])
+beta_uvw = UVBETA(Y_ES[es,],Q[es,])
 uvw_pred = Q[ps,] %*% beta_uvw
 validation(uvw_pred)
 
@@ -49,25 +49,22 @@ validation(pred_sem)
 
 # UVA (Univariate computed across environments)
 tall = reshape2::melt(Y_ES,na.rm = T)
-blup = mixed(value,~Var1,~Var2,tall)$Coefficients$Var1
-genotyped_individuals = intersect(names(blup),rownames(Q))
-beta_uva = MRR3F(Y = as.matrix(blup[genotyped_individuals]),
-                 X = Q[genotyped_individuals,])$b
-uva_pred = c(Q[ps,] %*% beta_uva) 
+uva_beta = mm(value,~Var1,~Var2,tall,list(Var1=Q),verb=F,FLM=T)$Mrk$Var1
+uva_pred = c(Q[ps,] %*% uva_beta) 
 uva_result = cor(uva_pred,Y_PS,use='p')
 round(c(Mu=mean(uva_result),Std=sd(uva_result)),2)
 
 # HCS (Multivariate heteroskedastic compound symmetry structured covariance)
-beta_hcs =  MRR3F(Y_ES[es,],Q[es,],HCS=TRUE,TH=TRUE,cores=-1)
+beta_hcs = MRR3(Y_ES[es,],Q[es,],HCS=TRUE,TH=TRUE,cores=-1)
 pred_hcs = Q[ps,] %*% beta_hcs$b
 validation(pred_hcs)
 
 # MV (Multivariate unstructured covariance)
-beta_mv =  MRR3F(Y_ES[es,],Q[es,],cores=-1,TH=TRUE)
+beta_mv =  MRR3(Y_ES[es,],Q[es,],cores=-1,TH=TRUE)
 pred_mv = Q[ps,] %*% beta_mv$b
 validation(pred_mv)
 
 # XFA (Multivariate extended factor analytics structured covariance)
-beta_xfa =  MRR3F(Y_ES[es,],Q[es,],XFA=TRUE,TH=TRUE,cores=-1)
+beta_xfa =  MRR3(Y_ES[es,],Q[es,],XFA=TRUE,TH=TRUE,cores=-1)
 pred_xfa = Q[ps,] %*% beta_xfa$b
 validation(pred_xfa)
