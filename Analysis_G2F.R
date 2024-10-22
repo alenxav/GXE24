@@ -55,7 +55,7 @@ beta_uva = MRR3F(Y = as.matrix(blup[genotyped_individuals]),
                  X = Q[genotyped_individuals,])$b
 uva_pred = c(Q[ps,] %*% beta_uva) 
 uva_result = cor(uva_pred,Y_PS,use='p')
-round(c(Mu=mean(xx),Std=sd(xx)),2)
+round(c(Mu=mean(uva_result),Std=sd(uva_result)),2)
 
 # HCS (Multivariate heteroskedastic compound symmetry structured covariance)
 beta_hcs =  MRR3F(Y_ES[es,],Q[es,],HCS=TRUE,TH=TRUE,cores=-1)
@@ -63,7 +63,7 @@ pred_hcs = Q[ps,] %*% beta_hcs$b
 validation(pred_hcs)
 
 # MV (Multivariate unstructured covariance)
-beta_mv =  MRR3F(Y_ES[es,],Q[es,],cores=-1)
+beta_mv =  MRR3F(Y_ES[es,],Q[es,],cores=-1,TH=TRUE)
 pred_mv = Q[ps,] %*% beta_mv$b
 validation(pred_mv)
 
